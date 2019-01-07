@@ -69,7 +69,7 @@ public class paths2 extends LinearOpMode {
     HardwareAri robot   = new HardwareAri();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // neverest 40:1
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -127,8 +127,8 @@ public class paths2 extends LinearOpMode {
         sleep(4300);
         robot.lift.setPower(0);
         sleep(1000);
-        //encoderDrive(DRIVE_SPEED,-1,1,1,-1,5.0);// slide
-        //encoderDrive(DRIVE_SPEED,1,1,1,1,5.0); // separarse lander
+        encoderDrive(DRIVE_SPEED,-3,3,3,-3,5.0);// slide
+        encoderDrive(DRIVE_SPEED,1,1,1,1,5.0); // separarse lander
         //encoderDrive(DRIVE_SPEED,  18,  18, 18,18,5.0); // arrasar
         //robot.recogedor.setPower(1);
         //sleep(1000);        //disparar
