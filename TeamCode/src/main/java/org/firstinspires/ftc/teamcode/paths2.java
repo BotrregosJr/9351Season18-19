@@ -127,15 +127,17 @@ public class paths2 extends LinearOpMode {
         sleep(4300);
         robot.lift.setPower(0);
         sleep(1000);
-        encoderDrive(DRIVE_SPEED,-3,3,3,-3,5.0);// slide
-        encoderDrive(DRIVE_SPEED,1,1,1,1,5.0); // separarse lander
-        //encoderDrive(DRIVE_SPEED,  18,  18, 18,18,5.0); // arrasar
-        //robot.recogedor.setPower(1);
-        //sleep(1000);        //disparar
-        //robot.recogedor.setPower(0);
-        //encoderDrive(DRIVE_SPEED,   -5, -5, -5,-5,5.0); // pa tras
-        //encoderDrive(TURN_SPEED, -10, 10, -10,10,5.0); //girars izquierda
-        //encoderDrive(DRIVE_SPEED,20,20,20,20,5.0); //puro pa delante, fierro pariente
+        encoderDrive(DRIVE_SPEED,-2,2,2,-2,5.0);// slide
+        encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,5.0); // pegarse lander
+        encoderDrive(DRIVE_SPEED,  -30.5,  -30.5, -30.5,-30.5,5.0); // arrasar
+        encoderDrive(DRIVE_SPEED,4.8,-4.8,4.8,-4.8,5.0);//girar
+        robot.recogedor.setPower(1);
+        sleep(1000);        //disparar
+        robot.recogedor.setPower(0);
+        encoderDrive(DRIVE_SPEED,30,30,30,30,5.0); //puro pa delante, fierro pariente
+        encoderDrive(0.8,-2,2,2,-2,5.0);// slide
+        encoderDrive(1,30,30,30,5,5.0); //puro pa delante, fierro pariente
+
 
         //izquierda
         // encoderLift(.5, 2,5.0); //bajar de lander
