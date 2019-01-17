@@ -49,7 +49,40 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Teleop platon", group="Pushbot")
 //@Disabled
-public class chasis_mechanum_ari extends LinearOpMode {
+public class
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+chasis_mechanum_ari extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareAri hws          = new HardwareAri();   // Use a Pushbot's hardware// could also use HardwarePushbotMatrix class.
