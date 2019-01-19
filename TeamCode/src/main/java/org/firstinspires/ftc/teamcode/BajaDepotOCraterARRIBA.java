@@ -52,9 +52,9 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Vuforia_Depot", group = "Concept")
+@Autonomous(name = " ARRIBA Baja Depot O Crater", group = "Concept")
 //@Disabled
-public class Solo2 extends LinearOpMode {
+public class BajaDepotOCraterARRIBA extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -145,109 +145,23 @@ public class Solo2 extends LinearOpMode {
             while (opModeIsActive()) {
 
 
+                robot.gate.setPosition(.825);
+                sleep(1500);
+                robot.lift.setPower(.5);
+                sleep(4300);
+                robot.lift.setPower(0);
+                sleep(1000);
+                encoderDrive(DRIVE_SPEED,-2.5,2.5,2.5,-2.5,5.0);// slide
+                encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,5.0); // pegarse lander
+                encoderDrive(DRIVE_SPEED,  -29.5,  -29.5, -29.5,-29.5,5.0); // arrasar
+                encoderDrive(DRIVE_SPEED,4.8,-4.8,4.8,-4.8,5.0);//girar
+                robot.recogedor.setPower(1);
+                sleep(2000);        //disparar
+                robot.recogedor.setPower(0);
+                encoderDrive(DRIVE_SPEED,10,10,10,10,5.0); //puro pa delante, fierro pariente
+                encoderDrive(0.8,-2.5,2.5,2.5,-2.5,5.0);// slide
+                encoderDrive(1,50,50,50,50,5.0); //puro pa delante, fierro pariente
 
-
-                if (tfod != null) {
-
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                      if (updatedRecognitions.size() == 2) {
-                        int goldMineralX = -1;
-                        int silverMineral1X = -1;
-                        int silverMineral2X = -1;
-
-                        for (Recognition recognition : updatedRecognitions) {
-                          if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                            goldMineralX = (int) recognition.getLeft();
-                          } else if (silverMineral1X == -1) {
-                            silverMineral1X = (int) recognition.getLeft();
-                          } else {
-                            silverMineral2X = (int) recognition.getLeft();
-                          }
-                        }
-
-                          if (goldMineralX == -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                            telemetry.addData("Gold Mineral Position", "Right");
-                              telemetry.update();
-                              robot.gate.setPosition(.825);
-                              sleep(1500);
-                              robot.lift.setPower(.5);
-                              sleep(4300);
-                              robot.lift.setPower(0);
-                              sleep(1000);
-                              encoderDrive(DRIVE_SPEED,-2.8,2.8,2.8,-2.8,5.0);// slide
-                              encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,2.0); // pegarse lander
-                              encoderDrive(TURN_SPEED,-6,1,-6,1,5.0); // girar izquierda
-                              encoderDrive(DRIVE_SPEED,-19,-19,-19,-19,5.0);//arrasar
-                              encoderDrive(DRIVE_SPEED,6.5,-10,6.5,-10,5.0);//girar
-                              encoderDrive(1,-15,-15,-15,-15,5.0); //puro pa delante, fierro pariente
-                              robot.recogedor.setPower(1);
-                              sleep(2000);      //disparar
-                              robot.recogedor.setPower(0);
-                              encoderDrive(1,10,10,10,10,5.0); //puro pa delante, fierro pariente
-                              encoderDrive(0.8,-4.7,4.7,4.7,-4.7,5.0);// slide
-                              encoderDrive(1,100,100,100,100,5.0); //puro pa delante, fierro pariente
-
-
-
-
-                          }
-                          else if (goldMineralX != -1 && silverMineral1X != -1) {
-                                if (goldMineralX > silverMineral1X) {
-                                telemetry.addData("Gold Mineral Position", "Center");
-                                    telemetry.update();
-                                    robot.gate.setPosition(.825);
-                                    sleep(1500);
-                                    robot.lift.setPower(.5);
-                                    sleep(4300);
-                                    robot.lift.setPower(0);
-                                    sleep(1000);
-                                    encoderDrive(DRIVE_SPEED,-2.5,2.5,2.5,-2.5,5.0);// slide
-                                    encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,5.0); // pegarse lander
-                                    encoderDrive(DRIVE_SPEED,  -29.5,  -29.5, -29.5,-29.5,5.0); // arrasar
-                                    encoderDrive(DRIVE_SPEED,4.8,-4.8,4.8,-4.8,5.0);//girar
-                                    robot.recogedor.setPower(1);
-                                    sleep(2000);        //disparar
-                                    robot.recogedor.setPower(0);
-                                    encoderDrive(DRIVE_SPEED,10,10,10,10,5.0); //puro pa delante, fierro pariente
-                                    encoderDrive(0.8,-2.5,2.5,2.5,-2.5,5.0);// slide
-                                    encoderDrive(1,50,50,50,50,5.0); //puro pa delante, fierro pariente
-
-                              } else {
-                                telemetry.addData("Gold Mineral Position", "Left");
-                                    telemetry.update();
-
-                                    robot.gate.setPosition(.825);
-                                    sleep(1500);
-                                    robot.lift.setPower(.5);
-                                    sleep(4300);
-                                    robot.lift.setPower(0);
-                                    sleep(1000);
-                                    encoderDrive(DRIVE_SPEED,-2.5,2.5,2.5,-2.5,5.0);// slide
-                                     encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,2.0); // pegarse lander
-                                    encoderDrive(TURN_SPEED,3,-4,3,-4,5.0); // girar izquierda
-                                    encoderDrive(DRIVE_SPEED,-18,-18,-18,-18,5.0);//arrasar
-                                    encoderDrive(DRIVE_SPEED,-7.2,7.2,-7.2,7.2,5.0);//girar
-                                    encoderDrive(TURN_SPEED,8,-8,-8,8,2.0);// slide
-                                    encoderDrive(1,-10,-10,-10,-10,5.0); //puro pa delante, fierro pariente
-                                    encoderDrive(TURN_SPEED,8,-8,8,-8,5.0); // girar izquierda
-                                    robot.recogedor.setPower(1);
-                                     sleep(2000);      //disparar
-                                     robot.recogedor.setPower(0);
-                                    encoderDrive(1,5,5,5,5,5.0); //puro pa delante, fierro pariente
-
-                                }
-                        }
-                      }
-                      telemetry.update();
-
-                        currentTime = System.currentTimeMillis();
-                    }
-                }
             }
         }
 

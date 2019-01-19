@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
+/* Copyright (c) 2018 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -30,62 +30,60 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
 /**
- * This file illustrates the concept of driving a path based on encoder counts.
- * It uses the common Pushbot hardware class to define the drive on the robot.
- * The code is structured as a LinearOpMode
+ * This 2018-2019 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * determine the position of the gold and silver minerals.
  *
- * The code REQUIRES that you DO have encoders on the wheels,
- *   otherwise you would use: PushbotAutoDriveByTime;
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  *
- *  This code ALSO requires that the drive Motors have been configured such that a positive
- *  power command moves them forwards, and causes the encoders to count UP.
- *
- *   The desired path in this example is:
- *   - Drive forward for 48 inches
- *   - Spin right for 12 Inches
- *   - Drive Backwards for 24 inches
- *   - Stop and close the claw.
- *
- *  The code is written using a method called: encoderDrive(speed, leftInches, rightInches, timeoutS)
- *  that performs the actual movement.
- *  This methods assumes that each movement is relative to the last stopping place.
- *  There are other ways to perform encoder based moves, but this method is probably the simplest.
- *  This code uses the RUN_TO_POSITION mode to enable the Motor controllers to generate the run profile
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * is explained below.
  */
-
-@Autonomous(name="pruebas paths", group="Pushbot")
-@Disabled
-public class paths2 extends LinearOpMode {
-
-    /* Declare OpMode members. */
+@Autonomous(name = " ABAJO Depot O Crater", group = "Concept")
+//@Disabled
+public class DepotOCraterABAJO extends LinearOpMode {
+    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
+    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
     HardwareAri robot   = new HardwareAri();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime();
+
+
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // neverest 40:1
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 1.0;
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     DRIVE_SPEED             = 0.90;
     static final double     TURN_SPEED              = 0.5;
+
+
+    private static final String VUFORIA_KEY = "AejTuGz/////AAAAmdZRjZEcgUHshHAYuhaOvWZCO2QXzSdYmf3Xjfz/Axpr6iIN7krl+sSzU/Kba24jaF51aXfZpOKxozk6xNgX/2M5V1iXAZH4C9EsbIsvYImhLq+OXc89yWUzROyEgP8zpgkMbBPxE8IUUY7UNLavSTy55KIYyyl+Q/qHvOFL2iyGVx4VhkbZ50+bk0b4LsVOQhifgbIDoJm0dSTwKC2bDfv3GYEcJtyMuZVBa8if4zwc6Nlz4kOoOaIW7pGU5e4danjpAqIuoUoGHzUF0rYuSfM3RfUKyBcIPcTCRXsjuQKe0Yv14wQav6o1yTr/7HEKMhZTTsVwXjfohOvYLwbHTsmU8/Ww6JliCUccO8LGG6Ua";
+
+    /**
+     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * localization engine.
+     */
+    private VuforiaLocalizer vuforia;
+
+    /**
+     * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
+     * Detection engine.
+     */
+    private TFObjectDetector tfod;
 
     @Override
     public void runOpMode() {
-
-        /*
-         * Initialize the drive system variables.
-         * The init() method of the hardware class does all the work here
-         */
-
 
         robot.init(hardwareMap);
 
@@ -110,94 +108,84 @@ public class paths2 extends LinearOpMode {
                 robot.backRightDrive.getCurrentPosition(),
                 robot.backLeftDrive.getCurrentPosition());
         telemetry.update();
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
+        initVuforia();
 
-        // Wait for the game to start (driver presses PLAY)
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+
+        /** Wait for the game to begin */
+        telemetry.addData(">", "Press Play to start tracking");
+        telemetry.update();
         waitForStart();
 
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        //cubos azules
 
-                                //centro
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-
-        //robot.gate.setPosition(.825);
-       // sleep(1500);
-        //robot.lift.setPower(.5);
-        //sleep(4300);
+        // robot.lift.setPower(-0.8);
+        //sleep(2400);
         //robot.lift.setPower(0);
-       // sleep(1000);
-       // encoderDrive(DRIVE_SPEED,-2.5,2.5,2.5,-2.5,5.0);// slide
-        //encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,5.0); // pegarse lander
-        //encoderDrive(DRIVE_SPEED,  -29.5,  -29.5, -29.5,-29.5,5.0); // arrasar
-        //encoderDrive(DRIVE_SPEED,4.8,-4.8,4.8,-4.8,5.0);//girar
-        //robot.recogedor.setPower(1);
-        //sleep(2000);        //disparar
-        //robot.recogedor.setPower(0);
-        //encoderDrive(DRIVE_SPEED,10,10,10,10,5.0); //puro pa delante, fierro pariente
-        //encoderDrive(0.8,-2.5,2.5,2.5,-2.5,5.0);// slide
-        //encoderDrive(1,50,50,50,50,5.0); //puro pa delante, fierro pariente
+        //sleep(1000);
+        //encoderDrive(DRIVE_SPEED,1.5,-1.5,-1.5,1.5,5.0);// slide
 
 
-        //izquierda
-        //robot.gate.setPosition(.825);
-         //sleep(1500);
-        //robot.lift.setPower(.5);
-        //sleep(4300);
-        //robot.lift.setPower(0);
-         //sleep(1000);
-         //encoderDrive(DRIVE_SPEED,-2.5,2.5,2.5,-2.5,5.0);// slide
-       // encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,2.0); // pegarse lander
-        //encoderDrive(TURN_SPEED,3,-4,3,-4,5.0); // girar izquierda
-        //encoderDrive(DRIVE_SPEED,-18,-18,-18,-18,5.0);//arrasar
-        //encoderDrive(DRIVE_SPEED,-7.2,7.2,-7.2,7.2,5.0);//girar
-        //encoderDrive(TURN_SPEED,8,-8,-8,8,2.0);// slide
-        //encoderDrive(1,-10,-10,-10,-10,5.0); //puro pa delante, fierro pariente
-        //encoderDrive(TURN_SPEED,8,-8,8,-8,5.0); // girar izquierda
-        //robot.recogedor.setPower(1);
-       // sleep(2000);      //disparar
-       // robot.recogedor.setPower(0);
-        //encoderDrive(1,5,5,5,5,5.0); //puro pa delante, fierro pariente
+        if (opModeIsActive()) {
+            /** Activate Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+            long startTime = System.currentTimeMillis();
+            long currentTime = startTime;
 
+            while (opModeIsActive()) {
 
-        //derecha
-        robot.gate.setPosition(.825);
-        sleep(1500);
-        robot.lift.setPower(.5);
-        sleep(4300);
-        robot.lift.setPower(0);
-        sleep(1000);
-        encoderDrive(DRIVE_SPEED,-2.8,2.8,2.8,-2.8,5.0);// slide
-        encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,2.0); // pegarse lander
-        encoderDrive(TURN_SPEED,-6,1,-6,1,5.0); // girar izquierda
-        encoderDrive(DRIVE_SPEED,-19,-19,-19,-19,5.0);//arrasar
-        encoderDrive(DRIVE_SPEED,6.5,-10,6.5,-10,5.0);//girar
-        encoderDrive(1,-15,-15,-15,-15,5.0); //puro pa delante, fierro pariente
-        robot.recogedor.setPower(1);
-        sleep(2000);      //disparar
-        robot.recogedor.setPower(0);
-        encoderDrive(1,10,10,10,10,5.0); //puro pa delante, fierro pariente
-        encoderDrive(0.8,-4.7,4.7,4.7,-4.7,5.0);// slide
-        encoderDrive(1,100,100,100,100,5.0); //puro pa delante, fierro pariente
+                encoderDrive(DRIVE_SPEED,  -29.5,  -29.5, -29.5,-29.5,5.0); // arrasar
+                encoderDrive(DRIVE_SPEED,4.8,-4.8,4.8,-4.8,5.0);//girar
+                robot.recogedor.setPower(1);
+                sleep(2000);        //disparar
+                robot.recogedor.setPower(0);
+                encoderDrive(DRIVE_SPEED,10,10,10,10,5.0); //puro pa delante, fierro pariente
+                encoderDrive(0.8,-2.5,2.5,2.5,-2.5,5.0);// slide
+                encoderDrive(1,50,50,50,50,5.0); //puro pa delante, fierro pariente
 
+            }
+        }
 
-
-
-
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
+        if (tfod != null) {
+            tfod.shutdown();
+        }
     }
 
-    /*
-     *  Method to perfmorm a relative move, based on encoder counts.
-     *  Encoders are not reset as the move is based on the current position.
-     *  Move will stop if any of three conditions occur:
-     *  1) Move gets to the desired position
-     *  2) Move runs out of time
-     *  3) Driver stops the opmode running.
+    /**
+     * Initialize the Vuforia localization engine.
      */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
+    }
+
+    /**
+     * Initialize the Tensor Flow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+    }
     public void encoderDrive(double speed,
                              double frontLeftInches, double frontRightInches,
                              double backLeftInches, double backRightInches,
@@ -269,7 +257,7 @@ public class paths2 extends LinearOpMode {
             robot.frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-             sleep(150);   // optional pause after each move
+            sleep(150);   // optional pause after each move
 
             robot.frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
