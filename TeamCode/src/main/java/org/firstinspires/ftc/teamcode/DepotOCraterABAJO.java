@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = " ABAJO Depot O Crater", group = "Concept")
+@Autonomous(name = " ABAJO Depot Crater", group = "Concept")
 //@Disabled
 public class DepotOCraterABAJO extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";

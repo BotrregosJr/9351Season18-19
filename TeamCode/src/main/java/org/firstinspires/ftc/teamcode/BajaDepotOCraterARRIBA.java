@@ -52,7 +52,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = " ARRIBA Baja Depot O Crater", group = "Concept")
+@Autonomous(name = " ARRIBA Baja Depot Crater", group = "Concept")
 //@Disabled
 public class BajaDepotOCraterARRIBA extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";

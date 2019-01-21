@@ -184,8 +184,9 @@ public class VuforiaCraterARRIBA extends LinearOpMode {
                               encoderDrive(TURN_SPEED,-6,1,-6,1,5.0); // girar izquierda
                               encoderDrive(DRIVE_SPEED,-19,-19,-19,-19,5.0);//arrasar
                               encoderDrive(DRIVE_SPEED,6.5,-10,6.5,-10,5.0);//girar
-                              encoderDrive(1,-50,-50,-50,-50,5.0); //puro pa delante, fierro pariente
+                              //encoderDrive(1,-2,2,-2,2,5.0); //puro pa delante, fierro pariente
 
+                              //encoderDrive(1,-20,-20,-20,-20,5.0); //puro pa delante, fierro pariente
 
 
 
@@ -203,7 +204,7 @@ public class VuforiaCraterARRIBA extends LinearOpMode {
                                     encoderDrive(DRIVE_SPEED,-2.5,2.5,2.5,-2.5,5.0);// slide
                                     encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,5.0); // pegarse lander
                                     encoderDrive(DRIVE_SPEED,  -29.5,  -29.5, -29.5,-29.5,5.0); // arrasar
-                                    encoderDrive(1,-50,-50,-50,-50,5.0); //puro pa delante, fierro pariente
+                                   // encoderDrive(1,-20,-20,-20,-20,5.0); //puro pa delante, fierro pariente
 
                                 } else {
                                 telemetry.addData("Gold Mineral Position", "Left");
@@ -219,7 +220,8 @@ public class VuforiaCraterARRIBA extends LinearOpMode {
                                      encoderDrive(DRIVE_SPEED,0.5,0.5,0.5,0.5,2.0); // pegarse lander
                                     encoderDrive(TURN_SPEED,3,-4,3,-4,5.0); // girar izquierda
                                     encoderDrive(DRIVE_SPEED,-18,-18,-18,-18,5.0);//arrasar
-                                    encoderDrive(1,-50,-50,-50,-50,5.0); //puro pa delante, fierro pariente
+                                    //encoderDrive(1,2,-2,2,-2,5.0); //puro pa delante, fierro pariente
+                                    //encoderDrive(1,-20,-20,-20,-20,5.0); //puro pa delante, fierro pariente
 
                                 }
                         }
